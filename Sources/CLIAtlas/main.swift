@@ -8,15 +8,23 @@
 import Foundation
 import MongoSwiftSync
 
-var murl: String = "mongodb+srv://Realm-student:Realm-basics@realmcluster.16vag.mongodb.net/video?readPreference=primaryPreferred&retryWrites=true&w=majority"
-let client = try MongoClient(murl)
+guard CommandLine.argc > 3 else {
+	print("Usage: \(CommandLine.arguments[0]) <user> <password> <host>")
+	exit(1)
+}
+
+let mUserStr	= CommandLine.arguments[1]
+let mPwdStr		= CommandLine.arguments[2]
+let mHostStr	= CommandLine.arguments[3]
+let mURLStr		= "mongodb+srv://\(mUserStr):\(mPwdStr)@\(mHostStr).mongodb.net/video?readPreference=primaryPreferred&retryWrites=true&w=majority"
+let mClient		= try MongoClient(mURLStr)
 
 defer {
     cleanupMongoSwift()
 }
 
-let db = client.db("video")
-let session = client.startSession(options: ClientSessionOptions(causalConsistency: true))
+let db = mClient.db("video")
+let session = mClient.startSession(options: ClientSessionOptions(causalConsistency: true))
 
 let movieCollection = db.collection("movieDetails", withType: MovieDetail.self)
 
